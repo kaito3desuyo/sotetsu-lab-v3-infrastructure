@@ -49,3 +49,38 @@ resource "aws_subnet" "private_subnet_C05" {
     "Name" = "${var.name}-db-subnet-1c"
   }
 }
+
+
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    "Name" = "${var.name}-api-rtbl"
+  }
+}
+
+
+resource "aws_route" "public_route" {
+  route_table_id         = aws_route_table.public_route_table.id
+  gateway_id             = aws_internet_gateway.internet_gateway.id
+  destination_cidr_block = "0.0.0.0/0"
+  depends_on = [
+    aws_route_table.public_route_table, aws_internet_gateway.internet_gateway
+  ]
+}
+
+
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = aws_vpc.vpc.id
+}
+
+
+resource "aws_route_table_association" "public_A01" {
+  subnet_id      = aws_subnet.public_subnet_A01.id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+resource "aws_route_table_association" "public_C01" {
+  subnet_id      = aws_subnet.public_subnet_C01.id
+  route_table_id = aws_route_table.public_route_table.id
+}
