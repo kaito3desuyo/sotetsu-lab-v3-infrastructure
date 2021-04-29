@@ -64,9 +64,6 @@ resource "aws_route" "public_route" {
   route_table_id         = aws_route_table.public_route_table.id
   gateway_id             = aws_internet_gateway.internet_gateway.id
   destination_cidr_block = "0.0.0.0/0"
-  depends_on = [
-    aws_route_table.public_route_table, aws_internet_gateway.internet_gateway
-  ]
 }
 
 
@@ -83,4 +80,46 @@ resource "aws_route_table_association" "public_A01" {
 resource "aws_route_table_association" "public_C01" {
   subnet_id      = aws_subnet.public_subnet_C01.id
   route_table_id = aws_route_table.public_route_table.id
+}
+
+
+resource "aws_route_table" "db_route_table" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    "Name" = "${var.name}-db-rtbl"
+  }
+}
+
+resource "aws_route" "db_route" {
+  route_table_id            = aws_route_table.db_route_table.id
+  vpc_peering_connection_id = aws_vpc_peering_connection.from_seapolis_development.id
+  destination_cidr_block    = "255.0.0.0/16"
+}
+
+resource "aws_vpc_peering_connection" "from_seapolis_development" {
+  vpc_id      = "vpc-077f7ba28746d3591"
+  peer_vpc_id = aws_vpc.vpc.id
+
+  accepter {
+    allow_remote_vpc_dns_resolution = true
+  }
+
+  requester {
+    allow_remote_vpc_dns_resolution = false
+  }
+
+  tags = {
+    "Name" = "${var.name}-pcx"
+  }
+}
+
+resource "aws_route_table_association" "private_A05" {
+  subnet_id      = aws_subnet.private_subnet_A05.id
+  route_table_id = aws_route_table.db_route_table.id
+}
+
+resource "aws_route_table_association" "private_C05" {
+  subnet_id      = aws_subnet.private_subnet_C05.id
+  route_table_id = aws_route_table.db_route_table.id
 }
