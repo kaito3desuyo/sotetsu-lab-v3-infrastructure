@@ -1,3 +1,39 @@
+resource "aws_key_pair" "keypair" {
+  key_name   = "${var.name}-key"
+  public_key = file("${path.root}/ssh/${var.name}.pub")
+}
+
+################################################################################
+
+resource "aws_launch_template" "for_api_ec2" {
+  name                   = "${var.name}-instance-launch-setting"
+  update_default_version = true
+  image_id               = "ami-0b60185623255ce57"
+  instance_type          = "t3.nano"
+  key_name               = "Amazon AWS - sotetsu-lab-v3-api"
+  ebs_optimized          = false
+  user_data = base64encode(
+    templatefile("${path.module}/assets/launch-template-user-data.tpl.sh", {
+      cluster_name = "sotetsu-lab-v3"
+    })
+  )
+
+  iam_instance_profile {
+    name = "ecsInstanceRole"
+  }
+
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups             = ["sg-0c61775ecf2d75f95"]
+  }
+
+  monitoring {
+    enabled = true
+  }
+}
+
+################################################################################
+
 resource "aws_lb" "for_api" {
   name               = "${var.name}-api"
   internal           = false
