@@ -50,6 +50,37 @@ resource "aws_security_group" "for_api_ec2" {
   }
 }
 
+resource "aws_autoscaling_group" "for_api_ec2" {
+  name                  = "sotetsu-lab-v3-auto-scaling-group-3"
+  min_size              = 1
+  max_size              = 100
+  desired_capacity      = 1
+  vpc_zone_identifier   = var.public_subnet_ids
+  protect_from_scale_in = true
+
+  launch_template {
+    id      = aws_launch_template.for_api_ec2.id
+    version = "$Latest"
+  }
+
+  tag {
+    key                 = "Name"
+    value               = "${var.name}-api"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = ""
+    propagate_at_launch = true
+  }
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [desired_capacity]
+  }
+}
+
 ################################################################################
 
 resource "aws_lb" "for_api" {
@@ -93,10 +124,6 @@ resource "aws_security_group" "for_api_alb" {
 
   tags = {
     Name = "${var.name}-api-alb-sg"
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
