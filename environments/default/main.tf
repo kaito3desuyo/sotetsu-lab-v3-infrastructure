@@ -1,5 +1,6 @@
 variable "profile" {}
 variable "region" {}
+variable "name" {}
 
 provider "aws" {
   profile = var.profile
@@ -22,4 +23,11 @@ module "terraform_state_backend" {
   terraform_backend_config_file_path = "."
   terraform_backend_config_file_name = "backend.tf"
   force_destroy                      = false
+}
+
+module "vpc" {
+  region = var.region
+  name   = var.name
+
+  source = "./../../modules/vpc"
 }
