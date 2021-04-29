@@ -8,8 +8,8 @@ resource "aws_launch_template" "for_api_ec2" {
   update_default_version = true
   image_id               = "ami-0b60185623255ce57"
   instance_type          = "t3.nano"
-  key_name               = "Amazon AWS - sotetsu-lab-v3-api"
-  ebs_optimized          = false
+  key_name               = aws_key_pair.keypair.id
+  ebs_optimized          = true
   user_data = base64encode(
     templatefile("${path.module}/assets/launch-template-user-data.tpl.sh", {
       cluster_name = "sotetsu-lab-v3"
@@ -21,8 +21,8 @@ resource "aws_launch_template" "for_api_ec2" {
   }
 
   network_interfaces {
-    associate_public_ip_address = true
-    security_groups             = ["sg-0c61775ecf2d75f95"]
+    associate_public_ip_address = false
+    security_groups             = [aws_security_group.for_api_ec2.id]
   }
 
   monitoring {
