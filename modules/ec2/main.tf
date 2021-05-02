@@ -12,7 +12,7 @@ resource "aws_launch_template" "for_api_ec2" {
   ebs_optimized          = true
   user_data = base64encode(
     templatefile("${path.module}/assets/launch-template-user-data.tpl.sh", {
-      cluster_name = "sotetsu-lab-v3"
+      cluster_name = "${var.name}-api-ecs-cluster"
     })
   )
 
@@ -31,9 +31,8 @@ resource "aws_launch_template" "for_api_ec2" {
 }
 
 resource "aws_security_group" "for_api_ec2" {
-  name        = "EC2ContainerService-sotetsu-lab-v3-EcsSecurityGroup-8X18374REWNO"
-  description = "ECS Allowed Ports"
-  vpc_id      = var.vpc_id
+  name   = "${var.name}-api-ec2-sg"
+  vpc_id = var.vpc_id
 
   ingress {
     from_port       = 32768
@@ -51,7 +50,7 @@ resource "aws_security_group" "for_api_ec2" {
 }
 
 resource "aws_autoscaling_group" "for_api_ec2" {
-  name                  = "sotetsu-lab-v3-auto-scaling-group-3"
+  name                  = "${var.name}-api-asg"
   min_size              = 1
   max_size              = 100
   desired_capacity      = 1
