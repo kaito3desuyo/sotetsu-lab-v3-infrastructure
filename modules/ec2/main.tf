@@ -127,7 +127,6 @@ resource "aws_security_group" "for_api_alb" {
 }
 
 
-
 resource "aws_lb_listener" "for_api_production" {
   load_balancer_arn = aws_lb.for_api.arn
   port              = "443"
