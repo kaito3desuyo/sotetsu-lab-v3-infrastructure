@@ -62,3 +62,15 @@ module "ec2" {
 
   source = "./../../modules/ec2"
 }
+
+module "ecs" {
+  region = var.region
+  name   = var.name
+
+  public_subnet_ids  = module.vpc.public_subnet_ids
+  asg_arn            = module.ec2.api_ec2_asg_arn
+  security_group_ids = [module.ec2.api_ec2_security_group_id]
+  alb_tg_arn         = module.ec2.api_alb_tg_arn
+
+  source = "./../../modules/ecs"
+}
