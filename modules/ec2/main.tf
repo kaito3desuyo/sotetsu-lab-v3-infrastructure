@@ -4,7 +4,7 @@ resource "aws_key_pair" "keypair" {
 }
 
 resource "aws_launch_template" "for_api_ec2" {
-  name                   = "${var.name}-instance-launch-setting"
+  name                   = "${var.name}-api-ec2-launch-setting"
   update_default_version = true
   image_id               = "ami-0b60185623255ce57"
   instance_type          = "t3.nano"
