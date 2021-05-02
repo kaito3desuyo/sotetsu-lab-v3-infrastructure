@@ -7,6 +7,12 @@ provider "aws" {
   region  = var.region
 }
 
+provider "aws" {
+  alias   = "virginia"
+  profile = var.profile
+  region  = "us-east-1"
+}
+
 # You cannot create a new backend by simply defining this and then
 # immediately proceeding to "terraform apply". The S3 backend must
 # be bootstrapped according to the simple yet essential procedure in
@@ -25,9 +31,34 @@ module "terraform_state_backend" {
   force_destroy                      = false
 }
 
+
+data "aws_acm_certificate" "default" {
+  domain      = "*.sotetsu-lab.com"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
+data "aws_acm_certificate" "virginia" {
+  domain      = "sotetsu-lab.com"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+  provider    = aws.virginia
+}
+
 module "vpc" {
   region = var.region
   name   = var.name
 
   source = "./../../modules/vpc"
+}
+
+module "ec2" {
+  region = var.region
+  name   = var.name
+
+  vpc_id            = module.vpc.vpc_id
+  public_subnet_ids = module.vpc.public_subnet_ids
+  acm_arn           = data.aws_acm_certificate.default.arn
+
+  source = "./../../modules/ec2"
 }
