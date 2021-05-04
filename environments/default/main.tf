@@ -56,9 +56,9 @@ module "ec2" {
   region = var.region
   name   = var.name
 
-  vpc_id            = module.vpc.vpc_id
-  public_subnet_ids = module.vpc.public_subnet_ids
-  acm_arn           = data.aws_acm_certificate.default.arn
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.public_subnet_ids
+  acm_arn    = data.aws_acm_certificate.default.arn
 
   source = "./../../modules/ec2"
 }
@@ -67,7 +67,7 @@ module "ecs" {
   region = var.region
   name   = var.name
 
-  public_subnet_ids  = module.vpc.public_subnet_ids
+  subnet_ids         = module.vpc.public_subnet_ids
   asg_arn            = module.ec2.api_ec2_asg_arn
   security_group_ids = [module.ec2.api_ec2_security_group_id]
   alb_tg_arn         = module.ec2.api_alb_tg_arn
