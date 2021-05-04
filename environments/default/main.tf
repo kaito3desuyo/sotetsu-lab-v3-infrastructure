@@ -1,6 +1,9 @@
 variable "profile" {}
 variable "region" {}
 variable "name" {}
+variable "my_ip" {}
+variable "main_db_username" {}
+variable "main_db_password" {}
 
 provider "aws" {
   profile = var.profile
@@ -73,4 +76,18 @@ module "ecs" {
   alb_tg_arn         = module.ec2.api_alb_tg_arn
 
   source = "./../../modules/ecs"
+}
+
+module "rds" {
+  region = var.region
+  name   = var.name
+
+  vpc_id              = module.vpc.vpc_id
+  subnet_ids          = module.vpc.db_subnet_ids
+  ingress_sg_ids      = [module.ec2.api_ec2_security_group_id]
+  ingress_cidr_blocks = [var.my_ip]
+  main_db_username    = var.main_db_username
+  main_db_password    = var.main_db_password
+
+  source = "./../../modules/rds"
 }
