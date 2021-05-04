@@ -69,6 +69,10 @@ resource "aws_route" "public_route" {
 
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    "Name" = "${var.name}-igw"
+  }
 }
 
 
@@ -94,11 +98,11 @@ resource "aws_route_table" "db_route_table" {
 resource "aws_route" "db_route" {
   route_table_id            = aws_route_table.db_route_table.id
   vpc_peering_connection_id = aws_vpc_peering_connection.from_seapolis_development.id
-  destination_cidr_block    = "255.0.0.0/16"
+  destination_cidr_block    = var.bastion_cidr_block
 }
 
 resource "aws_vpc_peering_connection" "from_seapolis_development" {
-  vpc_id      = "vpc-077f7ba28746d3591"
+  vpc_id      = "vpc-0175aee1bd10ce9fc"
   peer_vpc_id = aws_vpc.vpc.id
 
   accepter {
@@ -106,7 +110,7 @@ resource "aws_vpc_peering_connection" "from_seapolis_development" {
   }
 
   requester {
-    allow_remote_vpc_dns_resolution = false
+    allow_remote_vpc_dns_resolution = true
   }
 
   tags = {

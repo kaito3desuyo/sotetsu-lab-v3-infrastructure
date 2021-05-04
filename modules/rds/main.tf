@@ -30,6 +30,10 @@ resource "aws_security_group" "for_main_rds" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.name}-rds-sg"
+  }
 }
 
 resource "aws_db_instance" "for_main" {
@@ -47,7 +51,6 @@ resource "aws_db_instance" "for_main" {
   multi_az                        = false
   db_subnet_group_name            = aws_db_subnet_group.for_main_rds.name
   vpc_security_group_ids          = [aws_security_group.for_main_rds.id]
-  publicly_accessible             = true
   apply_immediately               = true
   auto_minor_version_upgrade      = true
   deletion_protection             = true
