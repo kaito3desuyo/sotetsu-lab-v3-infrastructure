@@ -1,6 +1,10 @@
 variable "profile" {}
 variable "region" {}
 variable "name" {}
+variable "my_ip" {}
+variable "bastion_cidr_block" {}
+variable "main_db_username" {}
+variable "main_db_password" {}
 
 provider "aws" {
   profile = var.profile
@@ -49,6 +53,8 @@ module "vpc" {
   region = var.region
   name   = var.name
 
+  bastion_cidr_block = var.bastion_cidr_block
+
   source = "./../../modules/vpc"
 }
 
@@ -56,9 +62,11 @@ module "ec2" {
   region = var.region
   name   = var.name
 
-  vpc_id            = module.vpc.vpc_id
-  public_subnet_ids = module.vpc.public_subnet_ids
-  acm_arn           = data.aws_acm_certificate.default.arn
+  vpc_id              = module.vpc.vpc_id
+  subnet_ids          = module.vpc.public_subnet_ids
+  ingress_sg_ids      = []
+  ingress_cidr_blocks = [var.bastion_cidr_block]
+  acm_arn             = data.aws_acm_certificate.default.arn
 
   source = "./../../modules/ec2"
 }
@@ -67,10 +75,22 @@ module "ecs" {
   region = var.region
   name   = var.name
 
-  public_subnet_ids  = module.vpc.public_subnet_ids
-  asg_arn            = module.ec2.api_ec2_asg_arn
-  security_group_ids = [module.ec2.api_ec2_security_group_id]
-  alb_tg_arn         = module.ec2.api_alb_tg_arn
+  asg_arn    = module.ec2.api_ec2_asg_arn
+  alb_tg_arn = module.ec2.api_alb_tg_arn
 
   source = "./../../modules/ecs"
+}
+
+module "rds" {
+  region = var.region
+  name   = var.name
+
+  vpc_id              = module.vpc.vpc_id
+  subnet_ids          = module.vpc.db_subnet_ids
+  ingress_sg_ids      = [module.ec2.api_ec2_security_group_id]
+  ingress_cidr_blocks = [var.bastion_cidr_block]
+  main_db_username    = var.main_db_username
+  main_db_password    = var.main_db_password
+
+  source = "./../../modules/rds"
 }

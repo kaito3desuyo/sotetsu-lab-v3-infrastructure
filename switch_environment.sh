@@ -45,7 +45,7 @@ switch_command() {
     # ${@:2} means that we append all of the arguments after tf init
 
     if [[ " ${sub_commands_with_vars[@]} " =~ " $1 " ]]; then
-        exec_with_backend_config init
+        # exec_with_backend_config init
         exec_with_tfvars $@
     elif [[ " ${sub_commands_with_backend[@]} " =~ " $1 " ]]; then
         exec_with_backend_config $@

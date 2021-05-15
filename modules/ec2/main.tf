@@ -35,6 +35,20 @@ resource "aws_security_group" "for_api_ec2" {
   vpc_id = var.vpc_id
 
   ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = var.ingress_sg_ids
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.ingress_cidr_blocks
+  }
+
+  ingress {
     from_port       = 32768
     to_port         = 65535
     protocol        = "tcp"
@@ -47,6 +61,10 @@ resource "aws_security_group" "for_api_ec2" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.name}-api-ec2-sg"
+  }
 }
 
 resource "aws_autoscaling_group" "for_api_ec2" {
@@ -54,7 +72,7 @@ resource "aws_autoscaling_group" "for_api_ec2" {
   min_size              = 1
   max_size              = 100
   desired_capacity      = 1
-  vpc_zone_identifier   = var.public_subnet_ids
+  vpc_zone_identifier   = var.subnet_ids
   protect_from_scale_in = true
 
   launch_template {
@@ -87,7 +105,7 @@ resource "aws_lb" "for_api" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.for_api_alb.id]
-  subnets            = var.public_subnet_ids
+  subnets            = var.subnet_ids
   tags = {
     Name = "${var.name}-api"
   }
