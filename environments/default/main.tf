@@ -49,48 +49,40 @@ data "aws_acm_certificate" "virginia" {
   provider    = aws.virginia
 }
 
-module "vpc" {
+module "network" {
   region = var.region
   name   = var.name
 
+  cidr_block         = "10.0.0.0/16"
   bastion_cidr_block = var.bastion_cidr_block
 
-  source = "./../../modules/vpc"
+  source = "./../../modules/network"
 }
 
-module "ec2" {
+module "database" {
   region = var.region
   name   = var.name
 
-  vpc_id              = module.vpc.vpc_id
-  subnet_ids          = module.vpc.public_subnet_ids
-  ingress_sg_ids      = []
-  ingress_cidr_blocks = [var.bastion_cidr_block]
-  acm_arn             = data.aws_acm_certificate.default.arn
-
-  source = "./../../modules/ec2"
-}
-
-module "ecs" {
-  region = var.region
-  name   = var.name
-
-  asg_arn    = module.ec2.api_ec2_asg_arn
-  alb_tg_arn = module.ec2.api_alb_tg_arn
-
-  source = "./../../modules/ecs"
-}
-
-module "rds" {
-  region = var.region
-  name   = var.name
-
-  vpc_id              = module.vpc.vpc_id
-  subnet_ids          = module.vpc.db_subnet_ids
-  ingress_sg_ids      = [module.ec2.api_ec2_security_group_id]
+  vpc_id              = module.network.vpc_id
+  subnet_ids          = module.network.db_subnet_ids
+  ingress_sg_ids      = [module.api.api_ec2_security_group_id]
   ingress_cidr_blocks = [var.bastion_cidr_block]
   main_db_username    = var.main_db_username
   main_db_password    = var.main_db_password
 
-  source = "./../../modules/rds"
+  source = "./../../modules/database"
 }
+
+module "api" {
+  region = var.region
+  name   = var.name
+
+  vpc_id              = module.network.vpc_id
+  subnet_ids          = module.network.public_subnet_ids
+  ingress_sg_ids      = []
+  ingress_cidr_blocks = [var.bastion_cidr_block]
+  acm_arn             = data.aws_acm_certificate.default.arn
+
+  source = "./../../modules/api"
+}
+
