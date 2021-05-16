@@ -59,6 +59,20 @@ module "network" {
   source = "./../../modules/network"
 }
 
+module "database" {
+  region = var.region
+  name   = var.name
+
+  vpc_id              = module.network.vpc_id
+  subnet_ids          = module.network.db_subnet_ids
+  ingress_sg_ids      = [module.ec2.api_ec2_security_group_id]
+  ingress_cidr_blocks = [var.bastion_cidr_block]
+  main_db_username    = var.main_db_username
+  main_db_password    = var.main_db_password
+
+  source = "./../../modules/database"
+}
+
 module "ec2" {
   region = var.region
   name   = var.name
@@ -82,16 +96,3 @@ module "ecs" {
   source = "./../../modules/ecs"
 }
 
-module "rds" {
-  region = var.region
-  name   = var.name
-
-  vpc_id              = module.network.vpc_id
-  subnet_ids          = module.network.db_subnet_ids
-  ingress_sg_ids      = [module.ec2.api_ec2_security_group_id]
-  ingress_cidr_blocks = [var.bastion_cidr_block]
-  main_db_username    = var.main_db_username
-  main_db_password    = var.main_db_password
-
-  source = "./../../modules/rds"
-}
