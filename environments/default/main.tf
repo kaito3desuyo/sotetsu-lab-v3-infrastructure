@@ -65,7 +65,7 @@ module "database" {
 
   vpc_id              = module.network.vpc_id
   subnet_ids          = module.network.db_subnet_ids
-  ingress_sg_ids      = [module.ec2.api_ec2_security_group_id]
+  ingress_sg_ids      = [module.api.api_ec2_security_group_id]
   ingress_cidr_blocks = [var.bastion_cidr_block]
   main_db_username    = var.main_db_username
   main_db_password    = var.main_db_password
@@ -73,7 +73,7 @@ module "database" {
   source = "./../../modules/database"
 }
 
-module "ec2" {
+module "api" {
   region = var.region
   name   = var.name
 
@@ -83,15 +83,15 @@ module "ec2" {
   ingress_cidr_blocks = [var.bastion_cidr_block]
   acm_arn             = data.aws_acm_certificate.default.arn
 
-  source = "./../../modules/ec2"
+  source = "./../../modules/api"
 }
 
 module "ecs" {
   region = var.region
   name   = var.name
 
-  asg_arn    = module.ec2.api_ec2_asg_arn
-  alb_tg_arn = module.ec2.api_alb_tg_arn
+  asg_arn    = module.api.api_ec2_asg_arn
+  alb_tg_arn = module.api.api_alb_tg_arn
 
   source = "./../../modules/ecs"
 }
