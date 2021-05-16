@@ -86,13 +86,3 @@ module "api" {
   source = "./../../modules/api"
 }
 
-module "ecs" {
-  region = var.region
-  name   = var.name
-
-  asg_arn    = module.api.api_ec2_asg_arn
-  alb_tg_arn = module.api.api_alb_tg_arn
-
-  source = "./../../modules/ecs"
-}
-

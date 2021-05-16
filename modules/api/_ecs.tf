@@ -6,7 +6,7 @@ resource "aws_ecs_capacity_provider" "for_api_ecs" {
   name = "${var.name}-api-ecs-cap"
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = var.asg_arn
+    auto_scaling_group_arn         = aws_autoscaling_group.for_api_ec2.arn
     managed_termination_protection = "ENABLED"
 
     managed_scaling {
@@ -61,7 +61,7 @@ resource "aws_ecs_service" "for_api" {
   #   }
 
   load_balancer {
-    target_group_arn = var.alb_tg_arn
+    target_group_arn = aws_lb_target_group.for_api_blue.arn
     container_name   = "${var.name}-api"
     container_port   = 3000
   }
