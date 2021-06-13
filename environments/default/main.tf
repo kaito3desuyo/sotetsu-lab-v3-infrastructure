@@ -6,6 +6,8 @@ variable "bastion_cidr_block" {}
 variable "main_db_username" {}
 variable "main_db_password" {}
 
+variable "bff_domain_name" {}
+
 provider "aws" {
   profile = var.profile
   region  = var.region
@@ -88,3 +90,12 @@ module "api" {
   source = "./../../modules/api"
 }
 
+module "web" {
+  region = var.region
+  name   = var.name
+
+  acm_arn         = data.aws_acm_certificate.virginia.arn
+  bff_domain_name = var.bff_domain_name
+
+  source = "./../../modules/web"
+}
