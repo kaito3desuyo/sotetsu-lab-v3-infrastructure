@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": "ecr:*",
+      "Resource": "${ecr_repository_arn}"
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": ["s3:List*", "s3:Get*", "s3:PutObject"],
+      "Resource": [
+        "${codepipeline_artifact_bucket_arn}",
+        "${codepipeline_artifact_bucket_arn}/*"
+      ]
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": ["${cloudwacth_logs_arn}", "${cloudwacth_logs_arn}:*"]
+    }
+  ]
+}

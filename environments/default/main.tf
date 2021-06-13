@@ -83,6 +83,8 @@ module "api" {
   ingress_cidr_blocks = [var.bastion_cidr_block]
   acm_arn             = data.aws_acm_certificate.default.arn
 
+  github_repository_name = "kaito3desuyo/sotetsu-lab-v3-api"
+
   source = "./../../modules/api"
 }
 
