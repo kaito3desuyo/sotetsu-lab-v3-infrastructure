@@ -29,8 +29,9 @@ resource "aws_iam_policy" "api_codepipeline_role_policy" {
   name = "${var.name}-api-codepipeline-role-policy"
 
   policy = templatefile("${path.module}/assets/codepipeline_role_policy.tpl.json", {
-    codepipeline_artifact_bucket_arn = aws_s3_bucket.for_api_codepipeline_artifact.arn
     codestar_connection_arn          = aws_codestarconnections_connection.for_api.arn
+    codepipeline_artifact_bucket_arn = aws_s3_bucket.for_api_codepipeline_artifact.arn
+    codebuild_project_arn            = aws_codebuild_project.for_api.arn
   })
 }
 

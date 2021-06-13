@@ -2,9 +2,50 @@
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "CodeStarPolicy",
+      "Effect": "Allow",
+      "Action": "codestar-connections:UseConnection",
+      "Resource": "${codestar_connection_arn}"
+    },
+    {
+      "Sid": "S3ArtifactPolicy",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:PutObjectAcl"],
+      "Resource": [
+        "${codepipeline_artifact_bucket_arn}",
+        "${codepipeline_artifact_bucket_arn}/*"
+      ]
+    },
+    {
+      "Sid": "CodeBuildPolicy",
+      "Effect": "Allow",
+      "Action": ["codebuild:BatchGetBuilds", "codebuild:StartBuild"],
+      "Resource": ["${codebuild_project_arn}"]
+    },
+    {
+      "Sid": "CodeDeployPolicy",
+      "Effect": "Allow",
+      "Action": [
+        "codedeploy:CreateDeployment",
+        "codedeploy:GetDeployment",
+        "codedeploy:GetApplication",
+        "codedeploy:GetApplicationRevision",
+        "codedeploy:RegisterApplicationRevision",
+        "codedeploy:GetDeploymentConfig"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECSPolicy",
+      "Effect": "Allow",
+      "Action": ["ecs:RegisterTaskDefinition"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECSPassRolePolicy",
+      "Effect": "Allow",
       "Action": ["iam:PassRole"],
       "Resource": "*",
-      "Effect": "Allow",
       "Condition": {
         "StringEqualsIfExists": {
           "iam:PassedToService": [
@@ -15,59 +56,6 @@
           ]
         }
       }
-    },
-    {
-      "Sid": "S3Policy",
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetBucketVersioning",
-        "s3:GetObject",
-        "s3:GetObjectVersion",
-        "s3:PutObject",
-        "s3:PutObjectAcl"
-      ],
-      "Resource": [
-        "${codepipeline_artifact_bucket_arn}",
-        "${codepipeline_artifact_bucket_arn}/*"
-      ]
-    },
-    {
-      "Sid": "CodeBuildPolicy",
-      "Effect": "Allow",
-      "Action": ["codebuild:BatchGetBuilds", "codebuild:StartBuild"],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codedeploy:CreateDeployment",
-        "codedeploy:GetApplication",
-        "codedeploy:GetApplicationRevision",
-        "codedeploy:GetDeployment",
-        "codedeploy:GetDeploymentConfig",
-        "codedeploy:RegisterApplicationRevision"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "codestar-connections:UseConnection",
-      "Resource": "${codestar_connection_arn}"
-    },
-    {
-      "Effect": "Allow",
-      "Action": ["elasticloadbalancing:*", "cloudwatch:*", "sns:*", "ecs:*"],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": ["lambda:InvokeFunction", "lambda:ListFunctions"],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": ["ecr:DescribeImages"],
-      "Resource": "*"
     }
   ]
 }
