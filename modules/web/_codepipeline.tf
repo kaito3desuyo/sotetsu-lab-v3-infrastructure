@@ -24,7 +24,7 @@ resource "aws_codepipeline" "for_web" {
       output_artifacts = ["SourceArtifact"]
       configuration = {
         "ConnectionArn"    = aws_codestarconnections_connection.for_web.arn
-        "FullRepositoryId" = "kaito3desuyo/sotetsu-lab-v3-client"
+        "FullRepositoryId" = var.github_repository_name
         "BranchName"       = "master"
       }
     }

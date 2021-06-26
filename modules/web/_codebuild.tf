@@ -25,7 +25,7 @@ resource "aws_codebuild_project" "for_web" {
 
     environment_variable {
       name  = "BUCKET_NAME"
-      value = aws_s3_bucket.for_web.name
+      value = aws_s3_bucket.for_web.id
     }
 
     environment_variable {
@@ -37,5 +37,16 @@ resource "aws_codebuild_project" "for_web" {
   cache {
     type  = "LOCAL"
     modes = ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE", "LOCAL_CUSTOM_CACHE"]
+  }
+
+  logs_config {
+    cloudwatch_logs {
+      status     = "ENABLED"
+      group_name = aws_cloudwatch_log_group.for_web_codebuild.name
+    }
+
+    s3_logs {
+      status = "DISABLED"
+    }
   }
 }
