@@ -1,4 +1,38 @@
 ################################################################################
+# CodePipeline IAM Role
+################################################################################
+data "aws_iam_policy_document" "codepipeline_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["codepipeline.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "web_codepipeline_role" {
+  name               = "${var.name}-web-codepipeline-role"
+  assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role_policy.json
+}
+
+resource "aws_iam_policy" "web_codepipeline_role_policy" {
+  name = "${var.name}-web-codepipeline-role-policy"
+
+  policy = templatefile("${path.module}/assets/codepipeline_role_policy.tpl.json", {
+    codestar_connection_arn          = aws_codestarconnections_connection.for_web.arn
+    codepipeline_artifact_bucket_arn = aws_s3_bucket.for_codepipeline_artifact.arn
+    codebuild_project_arn            = aws_codebuild_project.for_web.arn
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "web_codepipeline_role_attachment01" {
+  role       = aws_iam_role.web_codepipeline_role.name
+  policy_arn = aws_iam_policy.web_codepipeline_role_policy.arn
+}
+
+
+################################################################################
 # CodeBuild IAM Role
 ################################################################################
 data "aws_iam_policy_document" "codebuild_assume_role_policy" {

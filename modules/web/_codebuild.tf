@@ -25,12 +25,12 @@ resource "aws_codebuild_project" "for_web" {
 
     environment_variable {
       name  = "BUCKET_NAME"
-      value = "sotetsu-lab-v3-client-prod"
+      value = aws_s3_bucket.for_web.name
     }
 
     environment_variable {
       name  = "CLOUDFRONT_DISTRIBUTION_ID"
-      value = "E5C8TB9HLVQF9"
+      value = aws_cloudfront_distribution.for_web.id
     }
   }
 
