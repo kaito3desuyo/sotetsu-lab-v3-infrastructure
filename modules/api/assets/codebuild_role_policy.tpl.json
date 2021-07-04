@@ -2,28 +2,34 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "",
+      "Sid": "S3ArtifactPolicy",
       "Effect": "Allow",
-      "Action": "ecr:GetAuthorizationToken",
-      "Resource": "*"
-    },
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Action": "ecr:*",
-      "Resource": "${ecr_repository_arn}"
-    },
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Action": ["s3:List*", "s3:Get*", "s3:PutObject"],
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:PutObjectAcl"],
       "Resource": [
         "${codepipeline_artifact_bucket_arn}",
         "${codepipeline_artifact_bucket_arn}/*"
       ]
     },
     {
-      "Sid": "",
+      "Sid": "ECRAuthPolicy",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECRPolicy",
+      "Effect": "Allow",
+      "Action": "ecr:*",
+      "Resource": "${ecr_repository_arn}"
+    },
+    {
+      "Sid": "SSMParameterStorePolicy",
+      "Effect": "Allow",
+      "Action": ["ssm:GetParameters", "kms:Decrypt"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudWatchLogsPolicy",
       "Effect": "Allow",
       "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
       "Resource": ["${cloudwacth_logs_arn}", "${cloudwacth_logs_arn}:*"]

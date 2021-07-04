@@ -17,6 +17,13 @@ resource "aws_security_group" "for_api_ec2" {
   }
 
   ingress {
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.for_api_alb.id]
+  }
+
+  ingress {
     from_port       = 32768
     to_port         = 65535
     protocol        = "tcp"
