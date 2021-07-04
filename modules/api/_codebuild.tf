@@ -33,6 +33,11 @@ resource "aws_codebuild_project" "for_api" {
       value = "docker-hub-password"
       type  = "PARAMETER_STORE"
     }
+
+    environment_variable {
+      name  = "DOCKER_BUILDKIT"
+      value = 1
+    }
   }
 
   cache {

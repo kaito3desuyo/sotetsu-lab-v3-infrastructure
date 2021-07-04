@@ -32,6 +32,11 @@ resource "aws_ecs_cluster" "for_api" {
   name               = "${var.name}-api-ecs-cluster"
   capacity_providers = [aws_ecs_capacity_provider.for_api_ecs.name]
 
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.for_api_ecs.name
     base              = 0
@@ -47,18 +52,19 @@ resource "aws_ecs_service" "for_api" {
   name                               = "${var.name}-api-ecs-service"
   cluster                            = aws_ecs_cluster.for_api.id
   task_definition                    = "${data.aws_ecs_task_definition.for_api_ecs.family}:${data.aws_ecs_task_definition.for_api_ecs.revision}"
-  health_check_grace_period_seconds  = 60
   desired_count                      = 2
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 50
+  health_check_grace_period_seconds  = 60
   scheduling_strategy                = "REPLICA"
   propagate_tags                     = "TASK_DEFINITION"
+  # enable_execute_command             = true
 
-  #   network_configuration {
-  #     assign_public_ip = true
-  #     security_groups  = var.security_group_ids
-  #     subnets          = var.public_subnet_ids
-  #   }
+  # network_configuration {
+  #   assign_public_ip = false
+  #   subnets          = var.subnet_ids
+  #   security_groups  = [aws_security_group.for_api_ec2.id]
+  # }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.for_api_blue.arn
@@ -66,14 +72,14 @@ resource "aws_ecs_service" "for_api" {
     container_port   = 3000
   }
 
-  deployment_controller {
-    type = "CODE_DEPLOY"
-  }
-
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.for_api_ecs.name
     base              = 0
     weight            = 1
+  }
+
+  deployment_controller {
+    type = "CODE_DEPLOY"
   }
 
   lifecycle {
