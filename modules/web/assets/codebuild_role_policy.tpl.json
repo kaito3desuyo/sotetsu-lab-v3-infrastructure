@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3ArtifactPolicy",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:PutObjectAcl"],
+      "Resource": [
+        "${codepipeline_artifact_bucket_arn}",
+        "${codepipeline_artifact_bucket_arn}/*"
+      ]
+    },
+    {
+      "Sid": "S3DestinationPolicy",
+      "Effect": "Allow",
+      "Action": ["s3:ListObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": ["${destination_bucket_arn}", "${destination_bucket_arn}/*"]
+    },
+    {
+      "Sid": "CloudWatchLogsPolicy",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": ["${cloudwacth_logs_arn}", "${cloudwacth_logs_arn}:*"]
+    },
+    {
+      "Sid": "CloudFrontPolicy",
+      "Effect": "Allow",
+      "Action": ["cloudfront:CreateInvalidation"],
+      "Resource": ["${cloudfront_distribution_arn}"]
+    }
+  ]
+}
