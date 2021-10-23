@@ -34,7 +34,7 @@ resource "aws_ecs_cluster" "for_api" {
 
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = "disabled"
   }
 
   default_capacity_provider_strategy {

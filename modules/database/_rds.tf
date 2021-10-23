@@ -36,4 +36,11 @@ resource "aws_db_instance" "for_main" {
   tags = {
     "Name" = "${var.name}-main-rds"
   }
+
+  lifecycle {
+    ignore_changes = [
+      engine_version
+    ]
+  }
+ 
 }
