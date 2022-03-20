@@ -23,9 +23,10 @@ resource "aws_codepipeline" "for_api" {
       run_order        = 1
       output_artifacts = ["SourceArtifact"]
       configuration = {
-        "ConnectionArn"    = aws_codestarconnections_connection.for_api.arn
-        "FullRepositoryId" = var.github_repository_name
-        "BranchName"       = "master"
+        "OutputArtifactFormat" = "CODE_ZIP"
+        "ConnectionArn"        = aws_codestarconnections_connection.for_api.arn
+        "FullRepositoryId"     = var.github_repository_name
+        "BranchName"           = "master"
       }
     }
   }

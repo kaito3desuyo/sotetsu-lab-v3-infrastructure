@@ -76,6 +76,11 @@ resource "aws_cloudfront_distribution" "for_web" {
         forward = "none"
       }
     }
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = "arn:aws:cloudfront::442730633672:function/spa-routing"
+    }
   }
 
   restrictions {

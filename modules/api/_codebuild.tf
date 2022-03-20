@@ -12,14 +12,31 @@ resource "aws_codebuild_project" "for_api" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:2.0"
+    image                       = "aws/codebuild/standard:5.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = true
 
     environment_variable {
-      name  = "REPOSITORY_URI"
+      name  = "REPOSITORY_URL"
       value = aws_ecr_repository.for_api.repository_url
+    }
+
+    environment_variable {
+      name  = "DOCKER_HUB_USERNAME"
+      value = "docker-hub-username"
+      type  = "PARAMETER_STORE"
+    }
+
+    environment_variable {
+      name  = "DOCKER_HUB_PASSWORD"
+      value = "docker-hub-password"
+      type  = "PARAMETER_STORE"
+    }
+
+    environment_variable {
+      name  = "DOCKER_BUILDKIT"
+      value = 1
     }
   }
 

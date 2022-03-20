@@ -13,7 +13,7 @@
     {
       "Sid": "S3DestinationPolicy",
       "Effect": "Allow",
-      "Action": ["s3:ListObject", "s3:PutObject", "s3:DeleteObject"],
+      "Action": ["s3:ListBucket", "s3:PutObject", "s3:DeleteObject"],
       "Resource": ["${destination_bucket_arn}", "${destination_bucket_arn}/*"]
     },
     {
