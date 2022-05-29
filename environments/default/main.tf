@@ -63,6 +63,7 @@ module "network" {
 
   cidr_block         = "10.0.0.0/16"
   bastion_cidr_block = var.bastion_cidr_block
+  keypair_id         = module.keypair.keypair_id
 
   source = "./../../modules/network"
 }
