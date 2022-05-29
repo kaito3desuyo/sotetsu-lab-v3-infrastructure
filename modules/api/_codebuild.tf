@@ -18,11 +18,6 @@ resource "aws_codebuild_project" "for_api" {
     privileged_mode             = true
 
     environment_variable {
-      name  = "REPOSITORY_URL"
-      value = aws_ecr_repository.for_api.repository_url
-    }
-
-    environment_variable {
       name  = "DOCKER_HUB_USERNAME"
       value = "docker-hub-username"
       type  = "PARAMETER_STORE"
@@ -38,11 +33,20 @@ resource "aws_codebuild_project" "for_api" {
       name  = "DOCKER_BUILDKIT"
       value = 1
     }
+
+    environment_variable {
+      name  = "IMAGE_NAME"
+      value = aws_ecr_repository.for_api.name
+    }
   }
 
   cache {
-    type  = "NO_CACHE"
-    modes = []
+    type = "LOCAL"
+    modes = [
+      "LOCAL_SOURCE_CACHE",
+      "LOCAL_DOCKER_LAYER_CACHE",
+      "LOCAL_CUSTOM_CACHE"
+    ]
   }
 
   logs_config {
