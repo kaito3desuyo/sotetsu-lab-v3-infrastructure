@@ -51,6 +51,12 @@ data "aws_acm_certificate" "virginia" {
   provider    = aws.virginia
 }
 
+module "keypair" {
+  name = var.name
+
+  source = "./../../modules/keypair"
+}
+
 module "network" {
   region = var.region
   name   = var.name
