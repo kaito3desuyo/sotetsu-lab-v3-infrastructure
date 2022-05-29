@@ -51,12 +51,19 @@ data "aws_acm_certificate" "virginia" {
   provider    = aws.virginia
 }
 
+module "keypair" {
+  name = var.name
+
+  source = "./../../modules/keypair"
+}
+
 module "network" {
   region = var.region
   name   = var.name
 
   cidr_block         = "10.0.0.0/16"
   bastion_cidr_block = var.bastion_cidr_block
+  keypair_id         = module.keypair.keypair_id
 
   source = "./../../modules/network"
 }
@@ -80,7 +87,8 @@ module "api" {
   name   = var.name
 
   vpc_id              = module.network.vpc_id
-  subnet_ids          = module.network.public_subnet_ids
+  public_subnet_ids   = module.network.public_subnet_ids
+  private_subnet_ids  = module.network.private_subnet_ids
   ingress_sg_ids      = []
   ingress_cidr_blocks = [var.bastion_cidr_block]
   acm_arn             = data.aws_acm_certificate.default.arn
