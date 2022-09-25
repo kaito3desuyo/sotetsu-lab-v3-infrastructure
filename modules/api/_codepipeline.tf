@@ -1,8 +1,3 @@
-resource "aws_codestarconnections_connection" "for_api" {
-  name          = "${var.name}-api"
-  provider_type = "GitHub"
-}
-
 resource "aws_codepipeline" "for_api" {
   name     = "${var.name}-api"
   role_arn = aws_iam_role.api_codepipeline_role.arn
@@ -23,7 +18,7 @@ resource "aws_codepipeline" "for_api" {
       run_order        = 1
       output_artifacts = ["SourceArtifact"]
       configuration = {
-        "OutputArtifactFormat" = "CODE_ZIP"
+        "OutputArtifactFormat" = "CODEBUILD_CLONE_REF"
         "ConnectionArn"        = aws_codestarconnections_connection.for_api.arn
         "FullRepositoryId"     = var.github_repository_name
         "BranchName"           = "master"

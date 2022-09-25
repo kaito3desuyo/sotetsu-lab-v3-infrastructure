@@ -53,6 +53,7 @@ resource "aws_iam_role" "web_codebuild_role" {
 resource "aws_iam_policy" "web_codebuild_role_policy" {
   name = "${var.name}-web-codebuild-role-policy"
   policy = templatefile("${path.module}/assets/codebuild_role_policy.tpl.json", {
+    codestar_connection_arn          = aws_codestarconnections_connection.for_web.arn
     codepipeline_artifact_bucket_arn = aws_s3_bucket.for_codepipeline_artifact.arn
     destination_bucket_arn           = aws_s3_bucket.for_web.arn
     cloudwacth_logs_arn              = aws_cloudwatch_log_group.for_web_codebuild.arn

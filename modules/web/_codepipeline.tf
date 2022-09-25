@@ -1,8 +1,3 @@
-resource "aws_codestarconnections_connection" "for_web" {
-  name          = "${var.name}-web-csc"
-  provider_type = "GitHub"
-}
-
 resource "aws_codepipeline" "for_web" {
   name     = "${var.name}-client_prod"
   role_arn = aws_iam_role.web_codepipeline_role.arn
@@ -23,7 +18,7 @@ resource "aws_codepipeline" "for_web" {
       run_order        = 1
       output_artifacts = ["SourceArtifact"]
       configuration = {
-        "OutputArtifactFormat" = "CODE_ZIP"
+        "OutputArtifactFormat" = "CODEBUILD_CLONE_REF"
         "ConnectionArn"        = aws_codestarconnections_connection.for_web.arn
         "FullRepositoryId"     = var.github_repository_name
         "BranchName"           = "master"
