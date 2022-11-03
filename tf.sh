@@ -3,6 +3,7 @@
 # 使い方
 # (お使いのbash) switch_environment.sh ENVIRONMENT_NAME COMMAND
 # https://aws-blog.de/2019/05/managing-multiple-stages-with-terraform.html
+
 STAGE=$1
 
 if [[ ! -d "environments/${STAGE}" ]]; then

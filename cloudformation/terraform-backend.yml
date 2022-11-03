@@ -1,0 +1,73 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Terraform Backend"
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "General Information"
+        Parameters:
+          - SystemName
+
+Parameters:
+  SystemName:
+    Type: String
+    Default: sotetsu-lab-v3
+
+Resources:
+  # S3 Bucket
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub "${SystemName}-terraform-state"
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Name
+          Value: !Sub "${SystemName}-terraform-state"
+        - Key: System
+          Value: !Ref SystemName
+
+  # DynamoDB Table
+  DynamoDbTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: !Sub "${SystemName}-terraform-state-lock"
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      KeySchema:
+        - KeyType: HASH
+          AttributeName: LockID
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+      Tags:
+        - Key: Name
+          Value: !Sub "${SystemName}-terraform-state-lock"
+        - Key: System
+          Value: !Ref SystemName
+
+Outputs:
+  S3Bucket:
+    Value: !Ref S3Bucket
+    Export:
+      Name: !Sub "${AWS::StackName}::S3Bucket"
+  DynamoDbTable:
+    Value: !Ref DynamoDbTable
+    Export:
+      Name: !Sub "${AWS::StackName}::DynamoDbTable"

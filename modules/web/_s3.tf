@@ -1,10 +1,14 @@
 resource "aws_s3_bucket" "for_web" {
   bucket = "${var.name}-client-prod"
-  acl    = "private"
 
   tags = {
     "Name" = "${var.name}-client-prod"
   }
+}
+
+resource "aws_s3_bucket_acl" "for_web" {
+  bucket = aws_s3_bucket.for_web.bucket
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_public_access_block" "for_web" {
@@ -21,11 +25,15 @@ resource "aws_s3_bucket_public_access_block" "for_web" {
 ################################################################################
 resource "aws_s3_bucket" "for_codepipeline_artifact" {
   bucket = "${var.name}-web-codepipeline-artifact"
-  acl    = "private"
 
   tags = {
-    Name = "${var.name}-web-codepipeline-artifact"
+    "Name" = "${var.name}-web-codepipeline-artifact"
   }
+}
+
+resource "aws_s3_bucket_acl" "for_codepipeline_artifact" {
+  bucket = aws_s3_bucket.for_codepipeline_artifact.bucket
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_public_access_block" "for_codepipeline_artifact" {
