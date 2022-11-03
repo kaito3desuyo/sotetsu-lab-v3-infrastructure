@@ -9,3 +9,20 @@ variable "ingress_cidr_blocks" {}
 variable "acm_arn" {}
 
 variable "github_repository_name" {}
+
+locals {
+  module_name = basename(abspath(path.module))
+  module_tags = {
+    "Module" = local.module_name
+  }
+  prefix = "${var.name}-${local.module_name}"
+}
+
+locals {
+  ecs_cluster_name = "${local.prefix}-ecs-cluster"
+  ecs_service_name = "${local.prefix}-ecs-service"
+}
+
+locals {
+  codepipeline_artifact_bucket_name = "${local.prefix}-codepipeline-artifact"
+}

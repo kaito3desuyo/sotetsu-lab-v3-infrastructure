@@ -1,23 +1,8 @@
-variable "profile" {}
-variable "region" {}
-variable "name" {}
 variable "my_ip" {}
 variable "bastion_cidr_block" {}
 variable "main_db_username" {}
 variable "main_db_password" {}
-
 variable "bff_domain_name" {}
-
-provider "aws" {
-  profile = var.profile
-  region  = var.region
-}
-
-provider "aws" {
-  alias   = "virginia"
-  profile = var.profile
-  region  = "us-east-1"
-}
 
 data "aws_acm_certificate" "default" {
   domain      = "*.sotetsu-lab.com"
@@ -33,14 +18,14 @@ data "aws_acm_certificate" "virginia" {
 }
 
 module "keypair" {
-  name = var.name
+  name = local.system
 
   source = "./../../modules/keypair"
 }
 
 module "network" {
-  region = var.region
-  name   = var.name
+  region = local.region
+  name   = local.system
 
   cidr_block         = "10.0.0.0/16"
   bastion_cidr_block = var.bastion_cidr_block
@@ -50,8 +35,8 @@ module "network" {
 }
 
 module "database" {
-  region = var.region
-  name   = var.name
+  region = local.region
+  name   = local.system
 
   vpc_id              = module.network.vpc_id
   subnet_ids          = module.network.db_subnet_ids
@@ -64,8 +49,8 @@ module "database" {
 }
 
 module "api" {
-  region = var.region
-  name   = var.name
+  region = local.region
+  name   = local.system
 
   vpc_id              = module.network.vpc_id
   public_subnet_ids   = module.network.public_subnet_ids
@@ -80,8 +65,8 @@ module "api" {
 }
 
 module "web" {
-  region = var.region
-  name   = var.name
+  region = local.region
+  name   = local.system
 
   acm_arn         = data.aws_acm_certificate.virginia.arn
   bff_domain_name = var.bff_domain_name
