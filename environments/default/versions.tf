@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.37.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 4.0"
+    }
   }
 
   backend "s3" {
@@ -30,4 +34,8 @@ provider "aws" {
 provider "aws" {
   alias  = "virginia"
   region = "us-east-1"
+}
+
+provider "github" {
+  token = var.github_token
 }

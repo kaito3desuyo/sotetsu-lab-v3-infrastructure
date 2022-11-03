@@ -71,7 +71,7 @@ module "web" {
   acm_arn         = data.aws_acm_certificate.virginia.arn
   bff_domain_name = var.bff_domain_name
 
-  github_repository_name = "kaito3desuyo/sotetsu-lab-v3-client"
+  github_repository_name = "sotetsu-lab-v3-client"
 
   source = "./../../modules/web"
 }
