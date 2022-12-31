@@ -1,12 +1,19 @@
 resource "aws_codedeploy_app" "for_api" {
-  name             = "AppECS-${var.name}-api-service"
+  name             = local.codedeploy_application_name
   compute_platform = "ECS"
+
+  tags = merge(
+    local.module_tags,
+    {
+      "Name" = local.codedeploy_application_name
+    }
+  )
 }
 
 resource "aws_codedeploy_deployment_group" "for_api" {
-  app_name               = aws_codedeploy_app.for_api.name
-  deployment_group_name  = "DgpECS-${var.name}-api-service"
-  service_role_arn       = aws_iam_role.api_codedeploy_role.arn
+  app_name               = local.codedeploy_application_name
+  deployment_group_name  = local.codedeploy_deployment_group_name
+  service_role_arn       = aws_iam_role.codedeploy_role.arn
   deployment_config_name = "CodeDeployDefault.ECSAllAtOnce"
 
   ecs_service {
@@ -55,4 +62,11 @@ resource "aws_codedeploy_deployment_group" "for_api" {
     enabled = true
     events  = ["DEPLOYMENT_FAILURE"]
   }
+
+  tags = merge(
+    local.module_tags,
+    {
+      "Name" = local.codedeploy_deployment_group_name
+    }
+  )
 }

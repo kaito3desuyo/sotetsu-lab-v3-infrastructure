@@ -49,17 +49,12 @@ module "database" {
 }
 
 module "api" {
-  region = local.region
-  name   = local.system
-
-  vpc_id              = module.network.vpc_id
-  public_subnet_ids   = module.network.public_subnet_ids
-  private_subnet_ids  = module.network.private_subnet_ids
-  ingress_sg_ids      = []
-  ingress_cidr_blocks = [var.bastion_cidr_block]
-  acm_arn             = data.aws_acm_certificate.default.arn
-
-  github_repository_name = "kaito3desuyo/sotetsu-lab-v3-api"
+  name                   = local.system
+  vpc_id                 = module.network.vpc_id
+  public_subnet_ids      = module.network.public_subnet_ids
+  private_subnet_ids     = module.network.private_subnet_ids
+  acm_arn                = data.aws_acm_certificate.default.arn
+  github_repository_name = "sotetsu-lab-v3-api"
 
   source = "./../../modules/api"
 }
