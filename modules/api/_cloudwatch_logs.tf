@@ -1,3 +1,10 @@
-resource "aws_cloudwatch_log_group" "for_api_codebuild" {
-  name = "/aws/codebuild/${var.name}-api"
+resource "aws_cloudwatch_log_group" "for_ecs" {
+  name = local.cloudwatch_log_group_name
+
+  tags = merge(
+    local.module_tags,
+    {
+      "Name" = local.cloudwatch_log_group_tag_name
+    }
+  )
 }

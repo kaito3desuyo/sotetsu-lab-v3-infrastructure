@@ -4,6 +4,7 @@ resource "aws_lb" "for_api" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.for_api_alb.id]
   subnets            = var.public_subnet_ids
+
   tags = {
     Name = "${var.name}-api"
   }
@@ -13,8 +14,7 @@ resource "aws_lb_listener" "for_api_production" {
   load_balancer_arn = aws_lb.for_api.arn
   port              = "443"
   protocol          = "HTTPS"
-  # ssl_policy = ""
-  certificate_arn = var.acm_arn
+  certificate_arn   = var.acm_arn
 
   default_action {
     type             = "forward"
