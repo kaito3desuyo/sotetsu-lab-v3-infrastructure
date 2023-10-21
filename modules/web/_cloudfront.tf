@@ -16,12 +16,9 @@ resource "aws_cloudfront_distribution" "for_web" {
   }
 
   origin {
-    domain_name = aws_s3_bucket.for_web.bucket_regional_domain_name
-    origin_id   = "S3-${aws_s3_bucket.for_web.id}"
-
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.for_web.cloudfront_access_identity_path
-    }
+    domain_name              = aws_s3_bucket.for_web.bucket_regional_domain_name
+    origin_id                = "S3-${aws_s3_bucket.for_web.id}"
+    origin_access_control_id = aws_cloudfront_origin_access_control.for_web.id
   }
 
   origin {
@@ -46,17 +43,7 @@ resource "aws_cloudfront_distribution" "for_web" {
     compress               = true
     target_origin_id       = "Backend For Frontend"
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 0
-    max_ttl                = 0
-
-    forwarded_values {
-      headers      = []
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    cache_policy_id        = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
   }
 
   default_cache_behavior {
@@ -65,17 +52,7 @@ resource "aws_cloudfront_distribution" "for_web" {
     compress               = true
     target_origin_id       = "S3-${aws_s3_bucket.for_web.id}"
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-
-    forwarded_values {
-      headers      = []
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
 
     function_association {
       event_type   = "viewer-request"
@@ -90,4 +67,10 @@ resource "aws_cloudfront_distribution" "for_web" {
   }
 }
 
-resource "aws_cloudfront_origin_access_identity" "for_web" {}
+resource "aws_cloudfront_origin_access_control" "for_web" {
+  name                              = "sotetsu-lab-v3-web-cf-oac"
+  description                       = "Sotetsu Lab v3 Web CloudFront Origin Access Control"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
