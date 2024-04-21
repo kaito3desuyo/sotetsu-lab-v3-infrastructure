@@ -15,11 +15,11 @@ resource "aws_db_parameter_group" "main" {
   name   = local.rds_param_group_name
   family = "postgres12"
 
-  parameter {
-    name         = "max_connections"
-    value        = "LEAST({DBInstanceClassMemory*2/9531392},5000)"
-    apply_method = "pending-reboot"
-  }
+  # parameter {
+  #   name         = "max_connections"
+  #   value        = "LEAST({DBInstanceClassMemory*2/9531392},5000)"
+  #   apply_method = "pending-reboot"
+  # }
 
   tags = merge(
     local.module_tags,
@@ -40,10 +40,11 @@ resource "aws_db_instance" "main" {
   allocated_storage               = 20
   max_allocated_storage           = 1000
   storage_encrypted               = false
+  db_subnet_group_name            = aws_db_subnet_group.main.name
   multi_az                        = false
   availability_zone               = "ap-northeast-1a"
-  db_subnet_group_name            = aws_db_subnet_group.main.name
   vpc_security_group_ids          = [aws_security_group.for_rds.id]
+  ca_cert_identifier              = "rds-ca-rsa2048-g1"
   parameter_group_name            = aws_db_parameter_group.main.name
   backup_retention_period         = 7
   backup_window                   = "17:00-18:00"
@@ -89,8 +90,8 @@ resource "aws_db_proxy_default_target_group" "main" {
 
   connection_pool_config {
     max_connections_percent      = 100
-    max_idle_connections_percent = 20
-    connection_borrow_timeout    = 20
+    max_idle_connections_percent = 50
+    connection_borrow_timeout    = 30
   }
 }
 
