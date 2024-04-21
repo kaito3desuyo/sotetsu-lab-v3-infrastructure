@@ -17,11 +17,11 @@ data "aws_acm_certificate" "virginia" {
   provider    = aws.virginia
 }
 
-module "keypair" {
-  name = local.system
+# module "keypair" {
+#   name = local.system
 
-  source = "./../../modules/keypair"
-}
+#   source = "./../../modules/keypair"
+# }
 
 module "network" {
   region = local.region
@@ -29,7 +29,7 @@ module "network" {
 
   cidr_block         = "10.0.0.0/16"
   bastion_cidr_block = var.bastion_cidr_block
-  keypair_id         = module.keypair.keypair_id
+  # keypair_id         = module.keypair.keypair_id
 
   source = "./../../modules/network"
 }

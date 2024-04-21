@@ -3,7 +3,7 @@ variable "name" {}
 
 variable "cidr_block" {}
 variable "bastion_cidr_block" {}
-variable "keypair_id" {}
+# variable "keypair_id" {}
 
 locals {
   subnet = {
