@@ -2,20 +2,12 @@ variable "my_ip" {}
 variable "bastion_cidr_block" {}
 variable "main_db_username" {}
 variable "main_db_password" {}
-variable "bff_domain_name" {}
 
 # data "aws_acm_certificate" "default" {
 #   domain      = "*.sotetsu-lab.com"
 #   types       = ["AMAZON_ISSUED"]
 #   most_recent = true
 # }
-
-data "aws_acm_certificate" "virginia" {
-  domain      = "sotetsu-lab.com"
-  types       = ["AMAZON_ISSUED"]
-  most_recent = true
-  provider    = aws.virginia
-}
 
 # module "keypair" {
 #   name = local.system
@@ -57,16 +49,4 @@ module "api" {
   github_repository_name = "sotetsu-lab-v3-api"
 
   source = "./../../modules/api"
-}
-
-module "web" {
-  region = local.region
-  name   = local.system
-
-  acm_arn         = data.aws_acm_certificate.virginia.arn
-  bff_domain_name = var.bff_domain_name
-
-  github_repository_name = "sotetsu-lab-v3-client"
-
-  source = "./../../modules/web"
 }
