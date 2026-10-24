@@ -4,11 +4,11 @@ variable "main_db_username" {}
 variable "main_db_password" {}
 variable "bff_domain_name" {}
 
-data "aws_acm_certificate" "default" {
-  domain      = "*.sotetsu-lab.com"
-  types       = ["AMAZON_ISSUED"]
-  most_recent = true
-}
+# data "aws_acm_certificate" "default" {
+#   domain      = "*.sotetsu-lab.com"
+#   types       = ["AMAZON_ISSUED"]
+#   most_recent = true
+# }
 
 data "aws_acm_certificate" "virginia" {
   domain      = "sotetsu-lab.com"
@@ -49,11 +49,11 @@ module "database" {
 }
 
 module "api" {
-  name                   = local.system
-  vpc_id                 = module.network.vpc_id
-  public_subnet_ids      = module.network.public_subnet_ids
-  private_subnet_ids     = module.network.private_subnet_ids
-  acm_arn                = data.aws_acm_certificate.default.arn
+  name               = local.system
+  vpc_id             = module.network.vpc_id
+  public_subnet_ids  = module.network.public_subnet_ids
+  private_subnet_ids = module.network.private_subnet_ids
+  # acm_arn                = data.aws_acm_certificate.default.arn
   github_repository_name = "sotetsu-lab-v3-api"
 
   source = "./../../modules/api"
